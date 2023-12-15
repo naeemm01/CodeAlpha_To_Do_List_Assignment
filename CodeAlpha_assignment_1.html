@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+    <title>To-Do List_CodeAlpha</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #todo-container {
+            max-width: 400px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #todo-header {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        #todo-list {
+            padding: 15px;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .task input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        #add-task {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid navy;
+        }
+
+        #task-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #add-button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+       .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="todo-container">
+            <div id="todo-header" class="bg-success text-white">To-Do List</div>
+            <div id="todo-list"></div>
+            <div id="add-task" class="bg-light">
+                <input type="text" id="task-input" class="form-control" placeholder="Add a new task...">
+                <button id="add-button" class="btn btn-success">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const todoList = document.getElementById('todo-list');
+            const taskInput = document.getElementById('task-input');
+            const addButton = document.getElementById('add-button');
+
+            addButton.addEventListener('click', function () {
+                const taskText = taskInput.value.trim();
+                if (taskText !== '') {
+                    addTask(taskText);
+                    taskInput.value = '';
+                }
+            });
+
+            taskInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    const taskText = taskInput.value.trim();
+                    if (taskText !== '') {
+                        addTask(taskText);
+                        taskInput.value = '';
+                    }
+                }
+            });
+
+            function addTask(taskText) {
+                const task = document.createElement('div');
+                task.classList.add('task', 'bg-white', 'p-3', 'mb-2', 'rounded');
+                const currentDate = new Date().toLocaleDateString();
+                task.innerHTML = `
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="check-${Date.now()}">
+                        <label class="custom-control-label" for="check-${Date.now()}">${taskText}</label>
+                    </div>
+                    <small class="text-muted">${currentDate}</small>
+                    <button class="btn btn-danger btn-sm float-right">Delete</button>
+                `;
+
+                const deleteButton = task.querySelector('button');
+                deleteButton.addEventListener('click', function () {
+                    task.remove();
+                    saveTasks();
+                });
+
+                todoList.appendChild(task);
+                saveTasks();
+            }
+
+            function saveTasks() {
+                const tasks = [];
+                const taskElements = document.querySelectorAll('.task');
+                taskElements.forEach(function (taskElement) {
+                    const taskText = taskElement.querySelector('label').innerText;
+                    tasks.push(taskText);
+                });
+
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+
+            function loadTasks() {
+                const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                tasks.forEach(function (taskText) {
+                    addTask(taskText);
+                });
+            }
+
+            loadTasks();
+        });
+    </script>
+</body>
+</html>
